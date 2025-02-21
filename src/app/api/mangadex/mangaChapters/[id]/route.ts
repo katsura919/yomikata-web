@@ -1,5 +1,8 @@
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import axios from "axios";
-import { NextRequest, NextResponse } from "next/server";
+
+const MANGADEX_API = "https://api.mangadex.org";
 
 interface Chapter {
   id: string;
@@ -8,31 +11,20 @@ interface Chapter {
   uploadDate: string;
 }
 
-interface MangaDexChapterResponse {
-  data: {
-    id: string;
-    attributes: {
-      title: string | null;
-      chapter: string | null;
-      updatedAt: string;
-    };
-  }[];
-}
-
-export async function GET(req: NextRequest, context: { params: { id: string } }) {
-  const { id } = context.params;
-
-  if (!id) {
-    return NextResponse.json({ error: "Manga ID is required" }, { status: 400 });
-  }
-
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
+    const { id } = params;
+
+    if (!id) {
+      return NextResponse.json({ error: "Manga ID is required" }, { status: 400 });
+    }
+
     let allChapters: Chapter[] = [];
     let offset = 0;
     const limit = 100;
 
     while (true) {
-      const response = await axios.get(`https://api.mangadex.org/manga/${id}/feed`, {
+      const { data } = await axios.get(`${MANGADEX_API}/manga/${id}/feed`, {
         params: {
           limit,
           offset,
@@ -40,9 +32,7 @@ export async function GET(req: NextRequest, context: { params: { id: string } })
         },
       });
 
-      const data = response.data as MangaDexChapterResponse;
-
-      const chapters: Chapter[] = data.data.map((chapter) => ({
+      const chapters: Chapter[] = data.data.map((chapter: any) => ({
         id: chapter.id,
         title: chapter.attributes.title || `Chapter ${chapter.attributes.chapter || "Unknown"}`,
         chapterNumber: chapter.attributes.chapter ? parseFloat(chapter.attributes.chapter) : 0, // Handle null case
@@ -58,17 +48,12 @@ export async function GET(req: NextRequest, context: { params: { id: string } })
       offset += limit;
     }
 
-    // Sort all chapters
-    allChapters.sort((a: Chapter, b: Chapter) => a.chapterNumber - b.chapterNumber);
+    // Sort chapters in ascending order
+    allChapters.sort((a, b) => a.chapterNumber - b.chapterNumber);
 
-    return NextResponse.json(allChapters, { status: 200 });
-
-  } catch (error: any) {
-    console.error("Error fetching chapters:", error);
-
-    return NextResponse.json(
-      { error: error.response?.data?.message || error.message || "Internal Server Error" },
-      { status: error.response?.status || 500 }
-    );
+    return NextResponse.json(allChapters);
+  } catch (error) {
+    console.error("Error fetching manga chapters:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
