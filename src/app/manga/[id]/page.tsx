@@ -31,7 +31,7 @@ export default function MangaPage() {
   
       const controller = new AbortController();
   
-      fetch(`/api/mangadex/mangaDetails/${id}`, { signal: controller.signal })
+      fetch(`/api/mangadex/mangaDetails/${id}`, { signal: controller.signal }) 
         .then((res) => res.json())
         .then((data) => {
           if (!data || data.error) {

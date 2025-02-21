@@ -15,7 +15,7 @@ interface Manga {
   tags: string[];
   coverImage: string | null;
   publication: string;
-}
+} 
 
 export default function MangaDetails({ manga }: { manga: Manga }) {
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -71,7 +71,6 @@ export default function MangaDetails({ manga }: { manga: Manga }) {
             {/* Start Reading Button (Moved Here) */}
             <div className="flex justify-center md:justify-start">
             <MangaChapters mangaId={manga.id} />
-
 
             </div>
           </div>
