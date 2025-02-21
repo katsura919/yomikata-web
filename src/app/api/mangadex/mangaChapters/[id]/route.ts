@@ -9,7 +9,7 @@ interface Chapter {
   title: string;
   chapterNumber: number;
   uploadDate: string;
-}
+} 
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
