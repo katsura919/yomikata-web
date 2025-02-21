@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import axios from "axios";
@@ -10,14 +9,14 @@ interface Chapter {
   title: string;
   chapterNumber: number;
   uploadDate: string;
-} 
+}
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, context: { params: { [key: string]: string | string[] } }) {
   try {
-    const { id } = params;
+    const { id } = context.params;
 
-    if (!id) {
-      return NextResponse.json({ error: "Manga ID is required" }, { status: 400 });
+    if (!id || typeof id !== "string") {
+      return NextResponse.json({ error: "Manga ID is required and must be a string" }, { status: 400 });
     }
 
     let allChapters: Chapter[] = [];
@@ -34,9 +33,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       });
 
       const chapters: Chapter[] = data.data.map((chapter: any) => ({
-        id: chapter.id,
+        id: `${chapter.id}-${chapter.attributes.chapter || "unknown"}`,
         title: chapter.attributes.title || `Chapter ${chapter.attributes.chapter || "Unknown"}`,
-        chapterNumber: chapter.attributes.chapter ? parseFloat(chapter.attributes.chapter) : 0, // Handle null case
+        chapterNumber: chapter.attributes.chapter ? parseFloat(chapter.attributes.chapter) : 0,
         uploadDate: chapter.attributes.updatedAt,
       }));
 
