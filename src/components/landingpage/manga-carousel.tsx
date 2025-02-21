@@ -25,7 +25,7 @@ export default function MangaCarousel() {
   useEffect(() => {
     async function fetchFeaturedManga() {
       try {
-        const response = await fetch("https://api.mangadex.org/manga?limit=20&includes[]=cover_art&includes[]=author");
+        const response = await fetch("/api/mangadex/mangaCarousel"); // Calls your Next.js API        // Call your own backend API
         const data = await response.json();
 
         const formattedManga = data.data.map((manga: any) => ({
@@ -49,7 +49,8 @@ export default function MangaCarousel() {
     }
 
     fetchFeaturedManga();
-  }, []);
+}, []);
+
 
   if (loading) return <p className="text-center text-lg">Loading...</p>;
 
