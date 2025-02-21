@@ -36,20 +36,21 @@ const SearchBar = () => {
         setResults([]); // Clear results if search term is empty
         return;
       }
-
+  
       try {
-        const response = await axios.get<MangaResponse>(`https://api.mangadex.org/manga`, {
-          params: { title: searchTerm },
+        const response = await axios.get(`/api/manga/search`, {
+          params: { title: searchTerm }, // Pass search term to your Next.js API
         });
-        setResults(response.data.data);
+  
+        setResults(response.data); // Update results
       } catch (error) {
         console.error("Error fetching manga data:", error);
       }
     };
-
-    const debounceFetch = setTimeout(fetchResults, 300); // Debounce the search input
-
-    return () => clearTimeout(debounceFetch); // Cleanup on unmount
+  
+    const debounceFetch = setTimeout(fetchResults, 300); // Debounce input
+  
+    return () => clearTimeout(debounceFetch); // Cleanup function
   }, [searchTerm]);
 
   return (

@@ -7,7 +7,7 @@ import SearchBar from "@/components/navbar-03/search-bar";
 
 const Navbar03Page = () => {
   return (
-    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 max-w-[1400px] w-[90%] z-50 ">
+    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 max-w-[1400px] w-[95%] z-50 ">
       <nav className="h-16 bg-white/10 backdrop-blur-xl shadow-lg border border-white/20 rounded-xl">
         <div className="h-full flex items-center justify-between px-4 w-full">
           {/* Left: Logo & Desktop Menu */}
