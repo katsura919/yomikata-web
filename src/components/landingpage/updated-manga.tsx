@@ -40,13 +40,13 @@ const RecentlyUpdatedManga: React.FC = () => {
           ? Array.from({ length: 18 }).map((_, index) => (
               <Skeleton
                 key={index}
-                className="h-[250px] sm:h-[250px] md:h-[270px] lg:h-[300px] w-full rounded-md"
+                className="h-[250px] sm:h-[200px] md:h-[270px] lg:h-[300px] w-full rounded-md"
               />
             ))
           : mangaList.map((manga) => (
               <Card
                 key={manga.id}
-                className="relative h-[250px] sm:h-[250px] md:h-[270px] lg:h-[300px] w-full overflow-hidden rounded-md group"
+                className="relative h-[200px] sm:h-[250px] md:h-[270px] lg:h-[300px] w-full overflow-hidden rounded-md group"
               >
                 <Link href={`/manga/${manga.id}`} className="block w-full h-full">
                   <Image

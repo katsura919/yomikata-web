@@ -66,7 +66,7 @@ export default function MangaCarousel() {
                   key={index} 
                   className="basis-1/3 sm:basis-1/3 md:basis-1/4 lg:basis-[12.5%]"
                 >
-                  <Skeleton className="w-full h-[270px] sm:h-[270px] md:h-[270px] lg:h-[350px] rounded-md" />
+                  <Skeleton className="w-full h-[210px] sm:h-[270px] md:h-[270px] lg:h-[350px] rounded-md" />
                 </CarouselItem>
               ))
             : // Show real manga after loading
@@ -77,7 +77,7 @@ export default function MangaCarousel() {
                 >
                   <Link 
                     href={`/manga/${manga.id}`} 
-                    className="group relative block w-full h-[270px] sm:h-[270px] md:h-[270px] lg:h-[350px] overflow-hidden rounded-md"
+                    className="group relative block w-full h-[210px] sm:h-[290px] md:h-[300px] lg:h-[350px] overflow-hidden rounded-md"
                   >
                     <Image
                       src={manga.coverUrl}

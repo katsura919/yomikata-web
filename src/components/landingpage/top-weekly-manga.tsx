@@ -66,7 +66,7 @@ const TopWeeklyManga: React.FC = () => {
                 </div>
                 <div className="flex flex-col flex-1">
                   <p className="text-sm font-medium truncate">
-                    {manga.title.length > 30 ? manga.title.slice(0, 50) + "..." : manga.title}
+                    {manga.title.length > 30 ? manga.title.slice(0, 30) + "..." : manga.title}
                   </p>
                   <p className="text-xs opacity-75">👁️ {manga.views.toLocaleString()}</p>
                 </div>
