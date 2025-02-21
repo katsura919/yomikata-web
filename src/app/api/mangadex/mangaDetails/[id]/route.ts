@@ -4,9 +4,9 @@ const MANGADEX_API = 'https://api.mangadex.org';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } } // Change 'manga' to 'id' to match your route
+  { params }: { params: { id: string } } // Correct 'id' parameter to match the route
 ) {
-  const mangaId = params.id; // Get the manga ID from params
+  const mangaId = params.id;
 
   try {
     const response = await fetch(`${MANGADEX_API}/manga/${mangaId}`, {
@@ -18,7 +18,9 @@ export async function GET(
 
     // Check if the response is successful
     if (!response.ok) {
-      return NextResponse.json({ error: 'Manga not found' }, { status: 404 });
+      const headers = new Headers();
+      headers.set('Content-Type', 'application/json');
+      return NextResponse.json({ error: 'Manga not found' }, { status: 404, headers });
     }
 
     const data = await response.json();
@@ -72,9 +74,13 @@ export async function GET(
       altTitles,
     };
 
-    return NextResponse.json(formattedData); // Return the formatted manga data as JSON
-  } catch (error) {
-    console.error('Error fetching manga:', error);
-    return NextResponse.json({ error: 'An error occurred while fetching manga details' }, { status: 500 });
+    const headers = new Headers();
+    headers.set('Content-Type', 'application/json');
+    return NextResponse.json(formattedData, { headers });
+  } catch (error: any) {
+    console.error('Error fetching manga:', error.message, error.stack);
+    const headers = new Headers();
+    headers.set('Content-Type', 'application/json');
+    return NextResponse.json({ error: 'An error occurred while fetching manga details' }, { status: 500, headers });
   }
 }
