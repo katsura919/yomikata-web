@@ -8,6 +8,7 @@ import {
   CarouselPrevious, 
   CarouselNext 
 } from "@/components/ui/carousel";
+import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton
 import Link from "next/link";
 import Image from "next/image";
 
@@ -25,7 +26,7 @@ export default function MangaCarousel() {
   useEffect(() => {
     async function fetchFeaturedManga() {
       try {
-        const response = await fetch("/api/mangadex/mangaCarousel"); // Calls your Next.js API        // Call your own backend API
+        const response = await fetch("/api/mangadex/mangaCarousel"); // Calls your Next.js API
         const data = await response.json();
 
         const formattedManga = data.data.map((manga: any) => ({
@@ -49,10 +50,7 @@ export default function MangaCarousel() {
     }
 
     fetchFeaturedManga();
-}, []);
-
-
-  if (loading) return <p className="text-center text-lg">Loading...</p>;
+  }, []);
 
   return (
     <div className="w-[95%] max-w-[1900px] mx-auto relative">
@@ -61,30 +59,42 @@ export default function MangaCarousel() {
         opts={{ align: "start", loop: false }}
       >
         <CarouselContent className="flex">
-          {mangaList.map((manga) => (
-            <CarouselItem 
-              key={manga.id} 
-              className="basis-1/3 sm:basis-1/3 md:basis-1/4 lg:basis-[12.5%]"
-            >
-              <Link 
-                href={`/manga/${manga.id}`} 
-                className="group relative block w-full h-[270px] sm:h-[270px] md:h-[270px] lg:h-[350px] overflow-hidden rounded-md"
-              >
-                <Image
-                  src={manga.coverUrl}
-                  alt={manga.title}
-                  layout="fill"
-                  objectFit="cover"
-                  className="transition-transform duration-500 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent group-hover:from-black/90 group-hover:via-black/60 transition-opacity duration-500"></div>
-                <div className="absolute bottom-0 left-0 w-full p-4 text-white transition-transform duration-500 group-hover:translate-y-[-10px]">
-                  <h3 className="text-lg font-bold truncate">{manga.title}</h3>
-                  <p className="text-sm opacity-75 truncate">{manga.authors}</p>
-                </div>
-              </Link>
-            </CarouselItem>
-          ))}
+          {loading
+            ? // Show skeletons while loading
+              Array.from({ length: 20 }).map((_, index) => (
+                <CarouselItem 
+                  key={index} 
+                  className="basis-1/3 sm:basis-1/3 md:basis-1/4 lg:basis-[12.5%]"
+                >
+                  <Skeleton className="w-full h-[270px] sm:h-[270px] md:h-[270px] lg:h-[350px] rounded-md" />
+                </CarouselItem>
+              ))
+            : // Show real manga after loading
+              mangaList.map((manga) => (
+                <CarouselItem 
+                  key={manga.id} 
+                  className="basis-1/3 sm:basis-1/3 md:basis-1/4 lg:basis-[12.5%]"
+                >
+                  <Link 
+                    href={`/manga/${manga.id}`} 
+                    className="group relative block w-full h-[270px] sm:h-[270px] md:h-[270px] lg:h-[350px] overflow-hidden rounded-md"
+                  >
+                    <Image
+                      src={manga.coverUrl}
+                      alt={manga.title}
+                      layout="fill"
+                      objectFit="cover"
+                      className="transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent group-hover:from-black/90 group-hover:via-black/60 transition-opacity duration-500"></div>
+                    <div className="absolute bottom-0 left-0 w-full p-4 text-white transition-transform duration-500 group-hover:translate-y-[-10px]">
+                      <h3 className="text-lg font-bold truncate">{manga.title}</h3>
+                      <p className="text-sm opacity-75 truncate">{manga.authors}</p>
+                    </div>
+                  </Link>
+                </CarouselItem>
+              ))
+          }
         </CarouselContent>
 
         {/* Navigation Buttons */}
