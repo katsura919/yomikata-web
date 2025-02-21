@@ -8,48 +8,66 @@ interface Chapter {
   uploadDate: string;
 }
 
+interface MangaDexChapterResponse {
+  data: {
+    id: string;
+    attributes: {
+      title: string | null;
+      chapter: string | null;
+      updatedAt: string;
+    };
+  }[];
+}
+
 export async function GET(req: NextRequest, context: { params: { id: string } }) {
-  const { id } = context.params; // Correct way to access dynamic route params
+  const { id } = context.params;
 
   if (!id) {
     return NextResponse.json({ error: "Manga ID is required" }, { status: 400 });
   }
 
   try {
-    // Fetching the first 100 chapters using Axios
-    const response = await axios.get(`https://api.mangadex.org/manga/${id}/feed`, {
-      params: {
-        limit: 100, 
-        translatedLanguage: ["en"], // Fetch only English chapters
-      },
-    });
+    let allChapters: Chapter[] = [];
+    let offset = 0;
+    const limit = 100;
 
-    const data = response.data;
+    while (true) {
+      const response = await axios.get(`https://api.mangadex.org/manga/${id}/feed`, {
+        params: {
+          limit,
+          offset,
+          translatedLanguage: ["en"],
+        },
+      });
 
-    // Extracting relevant chapter details
-    const chapters: Chapter[] = data.data.map((chapter: any) => ({
-      id: chapter.id,
-      title: chapter.attributes.title || `Chapter ${chapter.attributes.chapter}`,
-      chapterNumber: parseFloat(chapter.attributes.chapter) || 0, // Convert to number for sorting
-      uploadDate: chapter.attributes.updatedAt,
-    }));
+      const data = response.data as MangaDexChapterResponse;
 
-    // Sorting chapters in ascending order (1 -> 100)
-    chapters.sort((a: Chapter, b: Chapter) => a.chapterNumber - b.chapterNumber);
+      const chapters: Chapter[] = data.data.map((chapter) => ({
+        id: chapter.id,
+        title: chapter.attributes.title || `Chapter ${chapter.attributes.chapter || "Unknown"}`,
+        chapterNumber: chapter.attributes.chapter ? parseFloat(chapter.attributes.chapter) : 0, // Handle null case
+        uploadDate: chapter.attributes.updatedAt,
+      }));
 
-    // Adding CORS headers
-    const headers = new Headers();
-    headers.append("Access-Control-Allow-Origin", "*");
-    headers.append("Access-Control-Allow-Methods", "GET, OPTIONS");
-    headers.append("Access-Control-Allow-Headers", "Content-Type");
+      allChapters = allChapters.concat(chapters);
 
-    return new NextResponse(JSON.stringify(chapters), { status: 200, headers });
+      if (data.data.length < limit) {
+        break; // Exit the loop if we've fetched all chapters
+      }
+
+      offset += limit;
+    }
+
+    // Sort all chapters
+    allChapters.sort((a: Chapter, b: Chapter) => a.chapterNumber - b.chapterNumber);
+
+    return NextResponse.json(allChapters, { status: 200 });
 
   } catch (error: any) {
-    console.error("Error fetching chapters:", error.message);
-    
+    console.error("Error fetching chapters:", error);
+
     return NextResponse.json(
-      { error: error.response?.data?.message || "Internal Server Error" },
+      { error: error.response?.data?.message || error.message || "Internal Server Error" },
       { status: error.response?.status || 500 }
     );
   }
