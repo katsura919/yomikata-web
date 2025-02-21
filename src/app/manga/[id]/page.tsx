@@ -26,7 +26,7 @@ export default function MangaPage() {
 
   const [manga, setManga] = useState<Manga | null>(null);
   const [loading, setLoading] = useState(true);
-  console.log(manga)
+
   useEffect(() => {
     if (!id) return;
 
