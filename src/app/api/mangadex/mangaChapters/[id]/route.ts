@@ -8,8 +8,8 @@ interface Chapter {
   uploadDate: string;
 }
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function GET(req: NextRequest, context: { params: { id: string } }) {
+  const { id } = context.params; // Correct way to access dynamic route params
 
   if (!id) {
     return NextResponse.json({ error: "Manga ID is required" }, { status: 400 });

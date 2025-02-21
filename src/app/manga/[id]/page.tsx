@@ -68,7 +68,7 @@ export default function MangaPage() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-lg"></div>
       
         {/* Scrollable Content (Grid Layout for Centering) */}
-        <div className="relative z-10 w-[90%] max-w-[1400px] mx-1 ml-5 mt-20 py-12 grid place-items-center">
+        <div className="relative z-10 w-[90%] max-w-[1400px] mx-1 lg:ml-5 mt-20 py-12 grid place-items-center">
           <div className="grid grid-cols-1 gap-8 w-full">
             {/* Manga Details */}
             <MangaDetails manga={manga} />

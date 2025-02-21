@@ -22,23 +22,22 @@ export async function GET(req: Request) {
       },
     });
 
-    const mangaData = response.data.data.map((manga: any) => {
-      const coverArt = manga.relationships.find(
-        (rel: any) => rel.type === "cover_art"
-      );
-      const author = manga.relationships.find(
-        (rel: any) => rel.type === "author"
-      );
-
+    const mangaData = response.data?.data?.map((manga: any) => {
+      if (!manga || !manga.attributes) return null; // Prevent undefined entries
+    
+      const coverArt = manga.relationships.find((rel: any) => rel.type === "cover_art");
+      const author = manga.relationships.find((rel: any) => rel.type === "author");
+    
       return {
         id: manga.id,
-        title: manga.attributes.title.en || "Untitled",
+        title: manga.attributes.title?.en || manga.attributes.title?.ja || "Untitled",
         coverUrl: coverArt
           ? `https://uploads.mangadex.org/covers/${manga.id}/${coverArt.attributes.fileName}`
           : "https://via.placeholder.com/150",
         authors: author?.attributes?.name || "Unknown",
       };
-    });
+    }).filter(Boolean); // Remove null values
+    
 
     return NextResponse.json(mangaData, {
       status: 200,
