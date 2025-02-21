@@ -18,80 +18,29 @@ interface Manga {
   publication: string;
 }
 
-const MANGADEX_API = "https://api.mangadex.org";
-
 export default function MangaPage() {
   const params = useParams();
   const id = typeof params?.id === "string" ? params.id : "";
 
   const [manga, setManga] = useState<Manga | null>(null);
   const [loading, setLoading] = useState(true);
-  console.log(manga)
+
   useEffect(() => {
     if (!id) return;
 
     const controller = new AbortController();
 
+    // Call your internal API instead of the external MangaDex API
     axios
-      .get(`${MANGADEX_API}/manga/${id}`, {
-        params: { includes: ["cover_art", "author", "artist"] },
+      .get(`/api/mangadex/${id}`, {
         headers: {
           "Content-Type": "application/json",
         },
         signal: controller.signal,
       })
       .then(({ data }) => {
-        const mangaData = data.data;
-
-        // Extract cover image
-        const coverRel = mangaData.relationships.find(
-          (rel: any) => rel.type === "cover_art"
-        );
-        const coverImage = coverRel?.attributes?.fileName
-          ? `https://uploads.mangadex.org/covers/${id}/${coverRel.attributes.fileName}`
-          : null;
-
-        // Extract author(s) and artist(s)
-        const authors =
-          mangaData.relationships
-            .filter((rel: any) => rel.type === "author")
-            .map((rel: any) => rel.attributes?.name)
-            .join(", ") || "Unknown";
-
-        const artists =
-          mangaData.relationships
-            .filter((rel: any) => rel.type === "artist")
-            .map((rel: any) => rel.attributes?.name)
-            .join(", ") || "Unknown";
-
-        // Extract description
-        const description =
-          mangaData.attributes.description?.en || "No description available";
-
-        // Extract alternative titles
-        const altTitles: string[] =
-          mangaData.attributes.altTitles?.flatMap(
-            (titleObj: Record<string, string>) => Object.values(titleObj)
-          ) || [];
-
-        // Format response
-        const formattedData: Manga = {
-          id: mangaData.id,
-          title: mangaData.attributes.title?.en || "No Title",
-          author: authors,
-          artist: artists,
-          contentRating: mangaData.attributes.contentRating || "Unknown",
-          tags:
-            mangaData.attributes.tags?.map(
-              (tag: any) => tag.attributes?.name?.en
-            ) || [],
-          coverImage,
-          publication: mangaData.attributes.publicationDemographic || "Unknown",
-          description,
-          altTitles,
-        };
-
-        setManga(formattedData);
+        // Set manga data directly from your API response
+        setManga(data);
       })
       .catch((err) => {
         if (err.name !== "AbortError") {
