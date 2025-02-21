@@ -24,7 +24,7 @@ export default function Home() {
           </div>
 
           {/* Top Weekly Mangas (Takes 1/3 of the row) */}
-          <div className="p-4 rounded-lg h-full flex flex-col">
+          <div className="p-4 rounded-lg h-full flex flex-col mt-2">
             <h2 className="text-2xl font-bold mb-3">📊 Top Weekly</h2>
             <TopWeeklyManga />
           </div>
