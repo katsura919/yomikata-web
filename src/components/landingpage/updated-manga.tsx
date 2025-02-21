@@ -19,38 +19,14 @@ const RecentlyUpdatedManga: React.FC = () => {
   useEffect(() => {
     const fetchManga = async () => {
       try {
-        const response = await axios.get("https://api.mangadex.org/manga", {
-          params: {
-            limit: 18,
-            order: { updatedAt: "desc" },
-            includes: ["cover_art", "author"],
-          },
-        });
-
-        const mangaData = response.data.data.map((manga: any): Manga => {
-          const coverArt = manga.relationships.find(
-            (rel: any) => rel.type === "cover_art"
-          );
-          const author = manga.relationships.find(
-            (rel: any) => rel.type === "author"
-          );
-
-          return {
-            id: manga.id,
-            title: manga.attributes.title.en || "Untitled",
-            coverUrl: coverArt
-              ? `https://uploads.mangadex.org/covers/${manga.id}/${coverArt.attributes.fileName}`
-              : "https://via.placeholder.com/150",
-            authors: author?.attributes?.name || "Unknown",
-          };
-        });
-
-        setMangaList(mangaData);
+        const response = await axios.get("/api/mangadex/latest"); // Call your Next.js API route
+  
+        setMangaList(response.data); // The API already formats the response
       } catch (error) {
         console.error("Error fetching manga:", error);
       }
     };
-
+  
     fetchManga();
   }, []);
 
