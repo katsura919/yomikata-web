@@ -5,6 +5,7 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { BookOpen } from "lucide-react";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { useRouter } from "next/navigation"; // Import useRouter
 
 interface Chapter {
   id: string;
@@ -17,6 +18,7 @@ export default function MangaChapters({ mangaId }: { mangaId: string }) {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter(); // Initialize useRouter
 
   useEffect(() => {
     if (!mangaId) return;
@@ -28,35 +30,11 @@ export default function MangaChapters({ mangaId }: { mangaId: string }) {
         setLoading(true);
         setError(null);
 
-        const { data } = await axios.get(`https://api.mangadex.org/manga/${mangaId}/feed`, {
+        const { data } = await axios.get(`/api/mangadex/mangaChapters/${mangaId}`, {
           signal: controller.signal,
-          params: {
-            limit: 100,
-            offset: 0,
-            translatedLanguage: ["en"],
-          },
-          headers: {
-            "Content-Type": "application/json",
-          },
         });
 
-        if (!data || !data.data) {
-          throw new Error("Invalid response from API");
-        }
-
-        const formattedChapters: Chapter[] = data.data.map((chapter: any) => ({
-          id: `${chapter.id}-${chapter.attributes.chapter || "unknown"}`,
-          title: chapter.attributes.title || `Chapter ${chapter.attributes.chapter || "Unknown"}`,
-          chapterNumber: chapter.attributes.chapter || "0",
-          uploadDate: chapter.attributes.updatedAt,
-        }));
-
-        // Ensure sorting works even if chapter numbers are missing or non-numeric
-        formattedChapters.sort((a, b) =>
-          (parseFloat(a.chapterNumber) || 0) - (parseFloat(b.chapterNumber) || 0)
-        );
-
-        setChapters(formattedChapters);
+        setChapters(data);
       } catch (err: any) {
         if (axios.isCancel(err)) return;
         console.error("Error fetching chapters:", err);
@@ -71,6 +49,10 @@ export default function MangaChapters({ mangaId }: { mangaId: string }) {
     return () => controller.abort();
   }, [mangaId]);
 
+  const handleReadClick = (chapterId: string) => {
+    router.push(`/reading/${chapterId}`); // Navigate to the reading page with the chapter ID
+  };
+
   return (
     <Drawer>
       <DrawerTrigger asChild>
@@ -82,7 +64,6 @@ export default function MangaChapters({ mangaId }: { mangaId: string }) {
         </Button>
       </DrawerTrigger>
 
-      {/* Half-screen drawer with scrollable content */}
       <DrawerContent className="h-1/2 rounded-t-2xl">
         <DrawerHeader>
           <DrawerTitle>Chapters</DrawerTitle>
@@ -107,7 +88,11 @@ export default function MangaChapters({ mangaId }: { mangaId: string }) {
                     <p className="text-sm">{chapter.title}</p>
                     <p className="text-xs">{new Date(chapter.uploadDate).toLocaleDateString()}</p>
                   </div>
-                  <Button variant="outline" className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex items-center gap-2"
+                    onClick={() => handleReadClick(chapter.id)} // Handle click to navigate
+                  >
                     <BookOpen size={18} /> Read
                   </Button>
                 </div>

@@ -13,7 +13,7 @@ interface Manga {
   description: string;
   contentRating: string;
   tags: string[];
-  coverImage: string | null;
+  coverImage: string;
   publication: string;
 }
 
@@ -24,7 +24,7 @@ export default function MangaPage() {
   const [manga, setManga] = useState<Manga | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  console.log(manga)
+
   useEffect(() => {
     if (!id) return;
 

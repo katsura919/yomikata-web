@@ -13,7 +13,7 @@ interface Manga {
   altTitles: string[];
   contentRating: string;
   tags: string[];
-  coverImage: string | null;
+  coverImage: string;
   publication: string;
 } 
 
@@ -28,7 +28,7 @@ export default function MangaDetails({ manga }: { manga: Manga }) {
           {/* Cover Image */}
           <div className="w-52 md:w-60 lg:w-72 flex-shrink-0">
             <img
-              src={manga.coverImage || "/placeholder.jpg"}
+              src={manga.coverImage}
               alt={manga.title}
               className="w-full h-auto object-cover rounded-xl shadow-xl"
             />
