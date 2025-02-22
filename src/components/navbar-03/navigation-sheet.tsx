@@ -20,7 +20,7 @@ export const NavigationSheet = () => {
           <Link href="#">Home</Link>
 
           <div>
-            <div className="font-bold">Food</div>
+            <div className="font-bold">Manga</div>
             <ul className="mt-2 space-y-3 ml-1 pl-4 border-l">
               {foods.map((foodItem) => (
                 <li key={foodItem.title}>
@@ -34,7 +34,7 @@ export const NavigationSheet = () => {
           </div>
 
           <div>
-            <div className="font-bold">Travel</div>
+            <div className="font-bold">Genre</div>
             <ul className="mt-2 space-y-3 ml-1 pl-4 border-l">
               {travelMenuItems.map((item) => (
                 <li key={item.title}>
