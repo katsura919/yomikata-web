@@ -1,14 +1,7 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
-import { middleware as corsMiddleware } from '@/app/api/cors'; // Adjust the path as needed
 
 export async function GET(req: Request) {
-  // Apply CORS middleware
-  const corsResponse = corsMiddleware(req);
-  if (corsResponse) {
-    return corsResponse; // Return CORS response if applicable
-  }
-
   const { searchParams } = new URL(req.url);
   const title = searchParams.get("title");
 
@@ -27,7 +20,6 @@ export async function GET(req: Request) {
         order: { updatedAt: "desc" },
         includes: ["cover_art", "author"],
       },
-      headers: { "Content-Type": "application/json",  'User-Agent': 'Yomikata/0.1.0'  },
     });
 
     const mangaData = response.data?.data?.map((manga: any) => {
@@ -45,6 +37,7 @@ export async function GET(req: Request) {
         authors: author?.attributes?.name || "Unknown",
       };
     }).filter(Boolean); // Remove null values
+    
 
     return NextResponse.json(mangaData, {
       status: 200,
