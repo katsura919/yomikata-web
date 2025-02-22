@@ -20,7 +20,7 @@ interface Manga {
 export default function MangaDetails({ manga }: { manga: Manga }) {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const coverImageUrl = manga?.coverImage
-  ? `http://localhost:5000${manga.coverImage}`
+  ? `https://yomikata-server.onrender.com${manga.coverImage}`
   : "fallback-image-url";
 
   return (

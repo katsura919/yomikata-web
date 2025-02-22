@@ -32,7 +32,7 @@ export default function MangaPage() {
 
     const controller = new AbortController();
 
-    fetch(`http://localhost:5000/manga/${id}`, { signal: controller.signal })
+    fetch(`https://yomikata-server.onrender.com/manga/${id}`, { signal: controller.signal })
       .then((res) => res.json())
       .then((data) => {
         if (!data || data.error) {
@@ -55,7 +55,7 @@ export default function MangaPage() {
   }, [id]);
 
   const coverImageUrl = manga?.coverImage
-    ? `http://localhost:5000${manga.coverImage}`
+    ? `https://yomikata-server.onrender.com${manga.coverImage}`
     : "fallback-image-url";
 
   return (
