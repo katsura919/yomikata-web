@@ -25,7 +25,7 @@ const SearchBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [results, setResults] = useState<Manga[]>([]);
-
+  console.log(results)
 
   // Update results dynamically as the search term changes
   useEffect(() => {
