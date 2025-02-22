@@ -30,9 +30,12 @@ export async function GET(request: NextRequest, { params }: any) {
     const formattedChapters = data.data.map((chapter: any) => ({
       id: chapter.id,
       title: chapter.attributes.title || `Chapter ${chapter.attributes.chapter || 'Unknown'}`,
-      chapterNumber: chapter.attributes.chapter || '0',
+      chapterNumber: parseFloat(chapter.attributes.chapter) || 0, // Ensure chapterNumber is a number for sorting
       uploadDate: chapter.attributes.updatedAt,
     }));
+
+    // Sort chapters by chapter number
+    formattedChapters.sort((a:any, b:any) => a.chapterNumber - b.chapterNumber);
 
     // Set CORS headers
     const response = NextResponse.json(formattedChapters);
