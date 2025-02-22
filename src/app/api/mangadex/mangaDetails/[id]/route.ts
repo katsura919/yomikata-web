@@ -1,11 +1,8 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 const MANGADEX_API = 'https://api.mangadex.org';
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } } // Correct 'id' parameter to match the route
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   const mangaId = params.id;
 
   try {
