@@ -1,9 +1,13 @@
+// api/mangadex.ts (or your specific API file)
 import { NextResponse } from "next/server";
 import axios from "axios";
+import { middleware } from "@/app/api/cors"; // Adjust the path based on your project structure
 
-export async function GET() {
+export async function GET(request: Request) {
+  const response = middleware(request); // Call CORS middleware
+
   try {
-    const response = await axios.get("https://api.mangadex.org/manga", {
+    const mangaResponse = await axios.get("https://api.mangadex.org/manga", {
       params: {
         limit: 18,
         order: { updatedAt: "desc" },
@@ -11,7 +15,7 @@ export async function GET() {
       },
     });
 
-    const mangaData = response.data.data.map((manga: any) => {
+    const mangaData = mangaResponse.data.data.map((manga: any) => {
       const coverArt = manga.relationships.find(
         (rel: any) => rel.type === "cover_art"
       );
@@ -29,14 +33,7 @@ export async function GET() {
       };
     });
 
-    return NextResponse.json(mangaData, {
-      status: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-      },
-    });
+    return NextResponse.json(mangaData, { status: 200 });
   } catch (error) {
     console.error("Error fetching manga:", error);
     return NextResponse.json(
