@@ -19,6 +19,9 @@ interface Manga {
 
 export default function MangaDetails({ manga }: { manga: Manga }) {
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const coverImageUrl = manga?.coverImage
+  ? `http://localhost:5000${manga.coverImage}`
+  : "fallback-image-url";
 
   return (
     <div className="w-full flex justify-center">
@@ -28,7 +31,7 @@ export default function MangaDetails({ manga }: { manga: Manga }) {
           {/* Cover Image */}
           <div className="w-52 md:w-60 lg:w-72 flex-shrink-0">
             <img
-              src={manga.coverImage}
+              src={coverImageUrl}
               alt={manga.title}
               className="w-full h-auto object-cover rounded-xl shadow-xl"
             />

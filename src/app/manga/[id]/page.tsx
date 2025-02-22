@@ -25,13 +25,14 @@ export default function MangaPage() {
   const [manga, setManga] = useState<Manga | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  console.log(manga);
 
   useEffect(() => {
     if (!id) return;
 
     const controller = new AbortController();
 
-    fetch(`https://yomikata-server.onrender.com/manga/${id}`, { signal: controller.signal })
+    fetch(`http://localhost:5000/manga/${id}`, { signal: controller.signal })
       .then((res) => res.json())
       .then((data) => {
         if (!data || data.error) {
@@ -53,11 +54,15 @@ export default function MangaPage() {
     return () => controller.abort();
   }, [id]);
 
+  const coverImageUrl = manga?.coverImage
+    ? `http://localhost:5000${manga.coverImage}`
+    : "fallback-image-url";
+
   return (
     <div
       className="w-full h-screen overflow-y-auto scrollbar-custom flex justify-center items-start"
       style={{
-        backgroundImage: `url(${manga?.coverImage || "fallback-image-url"})`,
+        backgroundImage: `url(${coverImageUrl})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
