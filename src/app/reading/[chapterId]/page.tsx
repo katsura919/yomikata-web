@@ -34,7 +34,7 @@ const ReadingPage = ({ params }: { params: Promise<{ chapterId: string }> }) => 
   }, [chapterId]);
 
   return (
-    <div className="flex flex-col items-center overflow-y-auto h-screen"> {/* Add scroll and height */}
+    <div className="flex flex-col items-center overflow-y-auto h-screen mt-10"> {/* Add scroll and height */}
       {loading ? (
         <div>Loading images...</div>
       ) : error ? (

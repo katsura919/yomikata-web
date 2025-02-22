@@ -79,7 +79,7 @@ export default function MangaCarousel() {
                     href={`/manga/${manga.id}`} 
                     className="group relative block w-full h-[210px] sm:h-[290px] md:h-[300px] lg:h-[350px] overflow-hidden rounded-md"
                   >
-                    <Image
+                    <Image 
                       src={manga.coverUrl}
                       alt={manga.title}
                       layout="fill"

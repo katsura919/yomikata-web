@@ -4,7 +4,7 @@ import { NavMenu } from "./nav-menu";
 import { NavigationSheet } from "./navigation-sheet";
 import { ModeToggle } from "../theme-toggle";
 import SearchBar from "@/components/navbar-03/search-bar";
-
+import Link from "next/link";
 const Navbar03Page = () => {
   return (
     <div className="fixed top-4 left-1/2 transform -translate-x-1/2 max-w-[1400px] w-[95%] z-50 ">
@@ -12,7 +12,7 @@ const Navbar03Page = () => {
         <div className="h-full flex items-center justify-between px-4 w-full">
           {/* Left: Logo & Desktop Menu */}
           <div className="flex items-center gap-10 flex-grow">
-            <Logo />
+          <Link href="/"><Logo /></Link>
             <NavMenu className="hidden md:block" />
           </div>
 
