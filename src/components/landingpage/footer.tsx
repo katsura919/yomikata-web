@@ -66,6 +66,11 @@ const Footer: React.FC = () => {
             &copy; {new Date().getFullYear()} Yomikata. All rights reserved.
           </div>
         </div>
+        
+        {/* Disclaimer Section */}
+        <div className="text-center mt-4 text-sm opacity-70">
+        <p>This project uses the MangaDex API and is a non-profit endeavor made out of hobby. All rights to manga content belong to their respective owners.</p>
+        </div>
       </div>
     </footer>
   );
