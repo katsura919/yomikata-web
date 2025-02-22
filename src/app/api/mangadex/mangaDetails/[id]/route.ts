@@ -1,83 +1,66 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import axios from "axios";
 
-const MANGADEX_API = 'https://api.mangadex.org';
+const MANGADEX_API = "https://api.mangadex.org";
 
 export async function GET(request: NextRequest, { params }: any) {
-  const mangaId = params.id;
-
   try {
-    const response = await fetch(`${MANGADEX_API}/manga/${mangaId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    // Check if the response is successful
-    if (!response.ok) {
-      const headers = new Headers();
-      headers.set('Content-Type', 'application/json');
-      return NextResponse.json({ error: 'Manga not found' }, { status: 404, headers });
+    const { id } = params;
+    if (!id) {
+      return NextResponse.json({ error: "Manga ID is required" }, { status: 400 });
     }
 
-    const data = await response.json();
-    const mangaData = data.data;
+    // Fetch manga details
+    const { data } = await axios.get(`${MANGADEX_API}/manga/${id}`, {
+      params: { includes: ["cover_art", "author", "artist"] },
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const manga = data.data;
 
     // Extract cover image
-    const coverRel = mangaData.relationships.find(
-      (rel: any) => rel.type === 'cover_art'
-    );
+    const coverRel = manga.relationships.find((rel: any) => rel.type === "cover_art");
     const coverImage = coverRel?.attributes?.fileName
-      ? `https://uploads.mangadex.org/covers/${mangaId}/${coverRel.attributes.fileName}`
+      ? `https://uploads.mangadex.org/covers/${id}/${coverRel.attributes.fileName}`
       : null;
 
     // Extract author(s) and artist(s)
-    const authors =
-      mangaData.relationships
-        .filter((rel: any) => rel.type === 'author')
-        .map((rel: any) => rel.attributes?.name)
-        .join(', ') || 'Unknown';
+    const authors = manga.relationships
+      .filter((rel: any) => rel.type === "author")
+      .map((rel: any) => rel.attributes?.name)
+      .join(", ") || "Unknown";
 
-    const artists =
-      mangaData.relationships
-        .filter((rel: any) => rel.type === 'artist')
-        .map((rel: any) => rel.attributes?.name)
-        .join(', ') || 'Unknown';
+    const artists = manga.relationships
+      .filter((rel: any) => rel.type === "artist")
+      .map((rel: any) => rel.attributes?.name)
+      .join(", ") || "Unknown";
 
-    // Extract description
-    const description =
-      mangaData.attributes.description?.en || 'No description available';
+    // Extract description (fallback to "No description available")
+    const description = manga.attributes.description?.en || "No description available";
 
-    // Extract alternative titles
-    const altTitles: string[] =
-      mangaData.attributes.altTitles?.flatMap(
-        (titleObj: Record<string, string>) => Object.values(titleObj)
-      ) || [];
+    // Extract all alt titles (any language)
+    const altTitles: string[] = manga.attributes.altTitles?.flatMap((titleObj: Record<string, string>) =>
+      Object.values(titleObj)
+    ) || [];
 
     // Format response
     const formattedData = {
-      id: mangaData.id,
-      title: mangaData.attributes.title?.en || 'No Title',
+      id: manga.id,
+      title: manga.attributes.title?.en || "No Title",
       author: authors,
       artist: artists,
-      contentRating: mangaData.attributes.contentRating || 'Unknown',
-      tags:
-        mangaData.attributes.tags?.map(
-          (tag: any) => tag.attributes?.name?.en
-        ) || [],
+      contentRating: manga.attributes.contentRating || "Unknown",
+      tags: manga.attributes.tags?.map((tag: any) => tag.attributes?.name?.en) || [],
       coverImage,
-      publication: mangaData.attributes.publicationDemographic || 'Unknown',
+      publication: manga.attributes.publicationDemographic || "Unknown",
       description,
-      altTitles,
+      altTitles, // Now includes all alternative titles in multiple languages
     };
 
-    const headers = new Headers();
-    headers.set('Content-Type', 'application/json');
-    return NextResponse.json(formattedData, { headers });
-  } catch (error: any) {
-    console.error('Error fetching manga:', error.message, error.stack);
-    const headers = new Headers();
-    headers.set('Content-Type', 'application/json');
-    return NextResponse.json({ error: 'An error occurred while fetching manga details' }, { status: 500, headers });
+    return NextResponse.json(formattedData);
+  } catch (error) {
+    console.error("Error fetching manga details:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
