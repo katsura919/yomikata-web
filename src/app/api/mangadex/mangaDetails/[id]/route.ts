@@ -14,7 +14,7 @@ export async function GET(request: NextRequest, { params }: any) {
     // Fetch manga details
     const { data } = await axios.get(`${MANGADEX_API}/manga/${id}`, {
       params: { includes: ["cover_art", "author", "artist"] },
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json",  'User-Agent': 'Yomikata/0.1.0'  },
     });
 
     const manga = data.data;
